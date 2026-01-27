@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Generation - BugDetector{% endblock %}
+
+{% block content %}
+<h1>Automated Test Case Generation</h1>
+<p>Automatically generate comprehensive unit tests for your codebase.</p>
+
+<div class="card">
+    <h3>Configuration</h3>
+    <form style="display: flex; flex-direction: column; gap: var(--spacing-md); margin-top: var(--spacing-sm);">
+        <div>
+            <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-xs);">Test Framework</label>
+            <select
+                style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border-color); width: 100%; max-width: 300px; background-color: rgba(255,255,255,0.1); color: var(--text-primary);">
+                <option>PyTest (Python)</option>
+                <option>Unittest (Python)</option>
+                <option>JUnit (Java)</option>
+                <option>Jest (JavaScript)</option>
+            </select>
+        </div>
+
+        <div>
+            <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-xs);">Coverage Target</label>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <label style="cursor: pointer;"><input type="radio" name="coverage" checked> Standard (80%)</label>
+                <label style="cursor: pointer;"><input type="radio" name="coverage"> High (95%)</label>
+                <label style="cursor: pointer;"><input type="radio" name="coverage"> Critical Logic Only</label>
+            </div>
+        </div>
+
+        <div class="bg-secondary" style="padding: var(--spacing-md);">
+            <h4>Ready to Generate?</h4>
+            <p style="font-size: 0.9rem;">Upload your source files in the Bug Detection tab first, then click below.</p>
+            <button type="button" class="btn btn-primary" style="margin-top: var(--spacing-sm);">Generate Test
+                Suite</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Generated Tests Preview</h3>
+    <div class="bg-secondary" style="padding: var(--spacing-xl); text-align: center; color: var(--text-secondary);">
+        <em>No tests generated yet. Start the process above.</em>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Bug Detector{% endblock %}
+
+{% block content %}
+<div class="dashboard-container" style="max-width: 1000px; margin: 40px auto; padding: 20px;">
+    <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;">
+        <h1>Welcome, <span style="color: var(--primary-color);">{{ user.first_name }}</span>!</h1>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline"
+            style="border-color: #ef4444; color: #ef4444;">Logout</a>
+    </div>
+
+    <div class="dashboard-grid"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+
+        <!-- Bug Detection Card -->
+        <div class="card feature-card" style="display: flex; flex-direction: column; align-items: flex-start;">
+            <div style="color: var(--primary-color); margin-bottom: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12h20" />
+                    <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6" />
+                    <path d="M22 12A10 10 0 0 0 12 2v10Z" />
+                </svg>
+            </div>
+            <h3>Bug Detection</h3>
+            <p style="margin-bottom: 20px;">Analyze your code for bugs and logic errors.</p>
+            <a href="{{ url_for('detect') }}" class="btn btn-primary" style="margin-top: auto;">Start Detecting</a>
+        </div>
+
+        <!-- Test Generation Card -->
+        <div class="card feature-card" style="display: flex; flex-direction: column; align-items: flex-start;">
+            <div style="color: var(--primary-color); margin-bottom: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+            </div>
+            <h3>Test Generation</h3>
+            <p style="margin-bottom: 20px;">Generate automated test cases for your functions.</p>
+            <a href="{{ url_for('generate') }}" class="btn btn-primary" style="margin-top: auto;">Generate Tests</a>
+        </div>
+
+        <!-- Profile/Settings Card (Placeholder) -->
+        <div class="card feature-card" style="display: flex; flex-direction: column; align-items: flex-start;">
+            <div style="color: var(--primary-color); margin-bottom: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </div>
+            <h3>My Profile</h3>
+            <p style="margin-bottom: 20px;">Manage your account details.</p>
+            <button class="btn btn-outline" disabled style="margin-top: auto;">Coming Soon</button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

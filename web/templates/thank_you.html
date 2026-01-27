@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Thank You - BugDetector{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto; text-align: center; padding-top: var(--spacing-xl);">
+
+    <div class="success-icon-container">
+        <svg class="success-icon" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+    </div>
+
+    <h1 style="margin-top: var(--spacing-lg);">Thank You for Your Support!</h1>
+
+    <div class="card" style="margin-top: var(--spacing-lg); border-top: 4px solid #10b981;">
+        <h3 style="color: var(--primary-color); margin-bottom: var(--spacing-md);">Transaction Simulated Successfully
+        </h3>
+
+        <p style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: var(--spacing-md);">
+            We are incredibly grateful for your willingness to contribute to the <strong>Bug Detector</strong> project.
+            Your support motivates us to push the boundaries of AI-driven software testing.
+        </p>
+
+        <div
+            style="background: rgba(245, 158, 11, 0.1); padding: var(--spacing-md); border-radius: var(--radius-md); margin-bottom: var(--spacing-lg);">
+            <p style="margin-bottom: 0; font-size: 0.95rem; color: #d97706;">
+                <strong>Note:</strong> This application is currently in the <strong>Development / Showcase
+                    Phase</strong>.
+                The payment gateway is in simulation mode, and <u>no money has been deducted</u> from your account.
+            </p>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Return to Home</a>
+    </div>
+
+</div>
+
+<style>
+    /* Local Styles for Success Page */
+    .success-icon-container {
+        width: 80px;
+        height: 80px;
+        background: #10b981;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .success-icon {
+        width: 40px;
+        height: 40px;
+        stroke: white;
+        fill: none;
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        animation: drawCheck 0.5s 0.3s ease forwards;
+    }
+
+    @keyframes popIn {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes drawCheck {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    [data-theme="dark"] .success-icon-container {
+        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2);
+    }
+</style>
+{% endblock %}

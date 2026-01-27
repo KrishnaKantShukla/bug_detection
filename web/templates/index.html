@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Bug Detector{% endblock %}
+
+{% block content %}
+<!-- Decorative Background Blob -->
+<div
+    style="position: absolute; top: -10%; right: -5%; width: 500px; height: 500px; background: var(--primary-light); filter: blur(100px); border-radius: 50%; opacity: 0.5; z-index: -1;">
+</div>
+
+<div class="hero-section" style="padding: var(--spacing-lg) 0; max-width: 1400px;">
+
+    <div class="hero-layout" style="display: flex; gap: var(--spacing-xl); align-items: flex-start; flex-wrap: wrap;">
+
+        <!-- Left Column: Hero Text & Demo -->
+        <div class="hero-left" style="flex: 1; min-width: 600px;">
+            <div
+                style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: var(--spacing-sm);">
+                <h1 style="max-width: 800px; text-align: left;">Automated Bug Detection for <br> <span
+                        class="typewriter-text" style="color: #6366f1;">Python</span></h1>
+                <p
+                    style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: var(--spacing-lg); line-height: 1.8; max-width: 600px; text-align: left;">
+                    Elevate your code quality with AI-driven insights. Instantly detect bugs and generate fixes.
+                </p>
+
+                <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap; margin-bottom: var(--spacing-xl);">
+                    <a href="{{ url_for('detect') }}" class="btn btn-primary">Start Detection <span
+                            style="margin-left:8px">→</span></a>
+                    <a href="{{ url_for('about') }}" class="btn btn-outline">Learn More</a>
+                </div>
+
+                <!-- Live Code Demo Terminal -->
+                <div class="terminal-demo" style="width: 100%; max-width: 650px; margin-bottom: var(--spacing-xl);">
+                    <div class="terminal-tabs" style="display: flex; background: #0f172a; padding: 0 10px;">
+                        <button class="lang-tab active" data-lang="python"
+                            style="background: transparent; border: none; color: #fff; padding: 8px 15px; cursor: pointer; font-family: inherit; font-size: 0.9rem; opacity: 1; border-bottom: 2px solid #6366f1;">Python</button>
+                        <button class="lang-tab" data-lang="java"
+                            style="background: transparent; border: none; color: #94a3b8; padding: 8px 15px; cursor: pointer; font-family: inherit; font-size: 0.9rem; opacity: 0.7; border-bottom: 2px solid transparent;">Java</button>
+                    </div>
+                    <div class="terminal-header" style="border-top: 1px solid #1e293b;">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="terminal-title">demo.py</span>
+                    </div>
+                    <div class="terminal-body">
+                        <code id="terminal-code"></code>
+                        <span class="cursor">|</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Platform Capabilities -->
+        <div class="hero-right" style="flex: 0 0 350px; max-width: 100%;">
+            <h2 style="margin-top: 0; margin-bottom: var(--spacing-md); font-size: 1.5rem;">Platform Capabilities</h2>
+            <div class="features-stack" style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+
+                <div class="card"
+                    style="padding: var(--spacing-md); display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="color: var(--primary-color); padding-top: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12h20" />
+                            <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6" />
+                            <path d="M22 12A10 10 0 0 0 12 2v10Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Intelligent Analysis</h3>
+                        <p style="font-size: 0.95rem; margin-bottom: 0; color: var(--text-secondary);">Identify logic
+                            errors and security vulnerabilities instantly using static analysis.</p>
+                    </div>
+                </div>
+
+                <div class="card"
+                    style="padding: var(--spacing-md); display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="color: var(--primary-color); padding-top: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Auto Test Generation</h3>
+                        <p style="font-size: 0.95rem; margin-bottom: 0; color: var(--text-secondary);">Generate PyTest
+                            and JUnit compatible test cases automatically.</p>
+                    </div>
+                </div>
+
+                <div class="card"
+                    style="padding: var(--spacing-md); display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="color: var(--primary-color); padding-top: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Smart Recommendations</h3>
+                        <p style="font-size: 0.95rem; margin-bottom: 0; color: var(--text-secondary);">Get exact code
+                            changes needed to resolve the detected bugs.</p>
+                    </div>
+                </div>
+
+                <a href="{{ url_for('about') }}" class="card"
+                    style="padding: var(--spacing-md); display: flex; align-items: flex-start; gap: 1rem; text-decoration: none; color: inherit; cursor: pointer;">
+                    <div style="color: var(--primary-color); padding-top: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">About Project</h3>
+                        <p style="font-size: 0.95rem; margin-bottom: 0; color: var(--text-secondary);">Learn more about
+                            the system architecture and team.</p>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-container">
+        <div class="stat-item" style="text-align: center;">
+            <div class="stat-number" data-target="98">0</div>
+            <div class="stat-label" style="color: var(--text-secondary);">Accuracy</div>
+        </div>
+        <div class="stat-item" style="text-align: center;">
+            <div class="stat-number" data-target="15000">0</div>
+            <div class="stat-label" style="color: var(--text-secondary);">Lines Analyzed</div>
+        </div>
+        <div class="stat-item" style="text-align: center;">
+            <div class="stat-number" data-target="2">0</div>
+            <div class="stat-label" style="color: var(--text-secondary);">Seconds / Scan</div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Trusted By Section -->
+    <div class="trusted-section animate-fade-up delay-100">
+        <div class="trusted-title">Trusted by Developers from</div>
+        <div class="trusted-logos">
+            <span>GOOGLE</span>
+            <span>MICROSOFT</span>
+            <span>AMAZON</span>
+            <span>META</span>
+            <span>OPENAI</span>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="how-it-works anime-fade-up delay-200">
+        <h2>How It Works</h2>
+        <p style="margin: 0 auto; text-align:center;">From bug detection to instant fix in three simple steps.</p>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                </div>
+                <h3 class="step-title">Upload Code</h3>
+                <p>Paste your Python snippet or upload a file. Our system parses it instantly.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12h10" />
+                        <path d="M9 4v16" />
+                        <path d="m3 9 3 3-3 3" />
+                        <path d="M12 7v10" />
+                    </svg>
+                </div>
+                <h3 class="step-title">AI Analysis</h3>
+                <p>Our advanced ML model scans for logical errors, security flaws, and performance issues.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </div>
+                <h3 class="step-title">Get Fixes</h3>
+                <p>Receive corrected code blocks, detailed explanations, and generated test cases.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section animate-fade-up delay-300">
+        <div class="faq-title">
+            <h2>Frequently Asked Questions</h2>
+            <p style="margin: 0 auto; text-align:center;">Common questions about our bug detection platform.</p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question"> Is it free to use?</div>
+            <div class="faq-answer">
+                Yes! We offer a generous free tier for individual developers.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question"> What languages are supported?</div>
+            <div class="faq-answer">
+                Currently, we specialize in Python, but support for Java and JavaScript is coming soon.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question"> How accurate is the AI model?</div>
+            <div class="faq-answer">
+                Our model utilizes state-of-the-art LLMs fine-tuned on millions of code repositories, achieving over 98%
+                accuracy in common bug detection.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple FAQ Accordion Script
+    document.querySelectorAll('.faq-question').forEach(item => {
+        item.addEventListener('click', () => {
+            const parent = item.parentElement;
+            parent.classList.toggle('active');
+        });
+    });
+</script>
+{% endblock %}
+
+{% block footer %}
+<footer class="site-footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <h3>Bug Detector</h3>
+            <p>Empowering developers with AI-driven code quality tools. Catch bugs early, ship faster.</p>
+        </div>
+
+        <div class="footer-col">
+            <h4>Product</h4>
+            <ul class="footer-links">
+                <a href="{{ url_for('detect') }}">Bug Detection</a>
+                <a href="{{ url_for('generate') }}">Test Generation</a>
+                <a href="#">Pricing</a>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Company</h4>
+            <ul class="footer-links">
+                <a href="{{ url_for('about') }}">About Us</a>
+                <a href="#">Careers</a>
+                <a href="#">Contact</a>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Stay Updated</h4>
+            <div class="footer-newsletter">
+                <input type="email" placeholder="Enter your email">
+                <button class="btn btn-primary" style="width: 100%; padding: 0.5rem;">Subscribe</button>
+            </div>
+        </div>
+    </div>
+    <div class="copyright">
+        &copy; 2026 Bug Detector. All rights reserved.
+    </div>
+</footer>
+{% endblock %}

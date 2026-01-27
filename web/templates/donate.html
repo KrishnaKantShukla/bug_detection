@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Support Us - BugDetector{% endblock %}
+
+{% block content %}
+<div class="project-banner">
+    <div class="banner-icon">🎓</div>
+    <div class="banner-content">
+        <h4>Major Project Showcase</h4>
+        <p>This tool is a demonstration of our final year project on Automated Bug Detection. While donations interface
+            is simulated, your feedback and interest mean the world to us!</p>
+    </div>
+</div>
+
+<div class="donate-hero">
+    <h1>Powering the Future of <span
+            style="background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Automated
+            Debugging</span></h1>
+    <p>
+        Building AI that understands code is expensive. Your support directly helps us maintain high-performance GPU
+        servers
+        and continue our research into automated bug detection and fix recommendation.
+    </p>
+</div>
+
+<!-- Donation Tiers -->
+<div class="pricing-grid">
+    <!-- Tier 1 -->
+    <div class="card pricing-card">
+        <div class="pricing-header">
+            <h3>Supporter</h3>
+            <div class="price-tag">
+                <span class="price-currency">$</span>5
+            </div>
+            <p style="font-size: 0.9rem; margin-bottom: 0;">Coffee for the Devs</p>
+        </div>
+        <ul class="pricing-features">
+            <li>Buy us a coffee</li>
+            <li>Keep servers running</li>
+            <li>Community badge</li>
+        </ul>
+        <a href="{{ url_for('donate_success') }}" class="btn btn-outline"
+            style="width: 100%; text-align: center;">Donate $5</a>
+    </div>
+
+    <!-- Tier 2 (Featured) -->
+    <div class="card pricing-card featured">
+        <div
+            style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); background: #8b5cf6; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">
+            MOST POPULAR</div>
+        <div class="pricing-header">
+            <h3>Contributor</h3>
+            <div class="price-tag">
+                <span class="price-currency">$</span>25
+            </div>
+            <p style="font-size: 0.9rem; margin-bottom: 0;">Server Uptime Hero</p>
+        </div>
+        <ul class="pricing-features">
+            <li>Priority Bug Queue</li>
+            <li>Badge on GitHub</li>
+            <li>Monthly Update Email</li>
+            <li>Early Access Features</li>
+        </ul>
+        <a href="{{ url_for('donate_success') }}" class="btn btn-primary"
+            style="width: 100%; text-align: center;">Donate $25</a>
+    </div>
+
+    <!-- Tier 3 -->
+    <div class="card pricing-card">
+        <div class="pricing-header">
+            <h3>Sponsor</h3>
+            <div class="price-tag">
+                <span class="price-currency">$</span>100
+            </div>
+            <p style="font-size: 0.9rem; margin-bottom: 0;">Research Partner</p>
+        </div>
+        <ul class="pricing-features">
+            <li>Logo on Main Page</li>
+            <li>Direct Dev Support</li>
+            <li>Influence Roadmap</li>
+            <li>Research Credits</li>
+        </ul>
+        <a href="{{ url_for('donate_success') }}" class="btn btn-outline"
+            style="width: 100%; text-align: center;">Donate $100</a>
+    </div>
+</div>
+
+<!-- Transparency / Benefits -->
+<div style="text-align: center; margin-top: var(--spacing-xl);">
+    <h2>Where Your Money Goes</h2>
+    <p>We believe in full transparency. Here is how your donations are utilized.</p>
+
+    <div class="benefit-grid">
+        <div class="benefit-card">
+            <div class="benefit-icon">🖥️</div>
+            <h4>GPU Cloud Compute</h4>
+            <p style="font-size: 0.9rem; margin-bottom: 0;">Running LLMs requires massive compute power. 70% of funds go
+                directly to GPU instances.</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon">🧠</div>
+            <h4>Model Training</h4>
+            <p style="font-size: 0.9rem; margin-bottom: 0;">Continuous fine-tuning of models on new datasets to improve
+                detection accuracy.</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon">🌐</div>
+            <h4>Web Infrastructure</h4>
+            <p style="font-size: 0.9rem; margin-bottom: 0;">Keeping this website fast, secure, and available 24/7 for
+                everyone.</p>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Intelligent Bug Detection - BugDetector{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: var(--spacing-xl);">
+    <h1>Intelligent Bug Detection & <span
+            style="background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Auto-Fix</span>
+    </h1>
+    <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: var(--spacing-md) auto;">
+        Upload your source code or paste it directly into our intelligent editor.
+        Our AI engine scans for syntax errors, logical bugs, and security vulnerabilities in real-time.
+    </p>
+</div>
+
+<div class="row" style="display: flex; gap: var(--spacing-xl); flex-wrap: wrap;">
+
+    <!-- Left Column: Upload -->
+    <div style="flex: 1; min-width: 300px;">
+        <h3 style="margin-bottom: var(--spacing-md);">1. Upload Code</h3>
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📂</div>
+            <h4 style="margin-bottom: var(--spacing-sm);">Drag & Drop File</h4>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: var(--spacing-md);">
+                Supports .py, .java, .js, .cpp
+            </p>
+            <button class="btn btn-outline" style="pointer-events: none;">Browse Computer</button>
+            <input type="file" id="fileInput" style="display: none;">
+        </div>
+
+
+    </div>
+
+    <!-- Right Column: Editor -->
+    <div style="flex: 2; min-width: 400px;">
+        <h3 style="margin-bottom: var(--spacing-md);">2. Intelligent Editor</h3>
+
+        <!-- Pro Tip Banner -->
+        <div class="pro-tip-banner">
+            <div class="pro-tip-icon">💡</div>
+            <div class="pro-tip-content">
+                <h5>Pro Tip:</h5>
+                <p>Ensure your code has proper indentation for accurate AI analysis.</p>
+            </div>
+        </div>
+
+        <div class="editor-window">
+            <div class="scan-overlay" id="scan-overlay">
+                <div class="scan-line"></div>
+            </div>
+
+            <div class="editor-header">
+                <div class="window-controls">
+                    <div class="control-dot red"></div>
+                    <div class="control-dot yellow"></div>
+                    <div class="control-dot green"></div>
+                </div>
+                <div class="editor-title">main.py - BugDetector Editor</div>
+            </div>
+
+            <div class="editor-content-area">
+                <textarea id="code-input" class="custom-textarea" placeholder="# Paste your Python, Java, or C++ code here...
+def calculate_sum(a, b):
+    return a + b"></textarea>
+            </div>
+        </div>
+
+        <div
+            style="text-align: right; display: flex; justify-content: flex-end; gap: var(--spacing-md); align-items: center;">
+            <p id="status-text"
+                style="margin-bottom: 0; font-size: 0.9rem; color: var(--text-secondary); opacity: 0; transition: opacity 0.3s;">
+                Scanning code modules...
+            </p>
+            <button id="analyze-btn" class="btn btn-primary" style="min-width: 150px;">
+                <span class="btn-text">Run Analysis</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Results Area -->
+<div id="results-area" style="display: none; margin-top: var(--spacing-xl); animation: fadeInUp 0.5s ease;">
+    <h2 style="margin-bottom: var(--spacing-md);">Analysis Report</h2>
+    <div class="editor-window" style="border: 1px solid #10b981;">
+        <div class="editor-header"
+            style="background: rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+            <div class="editor-title" style="color: #10b981;">✔ Threat Detection Complete</div>
+        </div>
+        <div id="results-content"
+            style="padding: 20px; font-family: 'Fira Code', monospace; color: #d4d4d4; white-space: pre-wrap; line-height: 1.6;">
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple inline script to handle the visual scan effect trigger
+    const analyzeBtn = document.getElementById('analyze-btn');
+    const scanOverlay = document.getElementById('scan-overlay');
+    const statusText = document.getElementById('status-text');
+
+    // Hook into existing logic via event capturing or just standard listener if script.js logic allows
+    // Note: script.js also attaches listener. We can add visual effects here.
+    analyzeBtn.addEventListener('click', () => {
+        const code = document.getElementById('code-input').value.trim();
+        if (code) {
+            scanOverlay.classList.add('scanning');
+            statusText.style.opacity = '1';
+        }
+    });
+
+    // Observer to stop scanning when results appear (simulated check)
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.target.style.display !== 'none') {
+                scanOverlay.classList.remove('scanning');
+                statusText.style.opacity = '0';
+            }
+        });
+    });
+
+    const resultsArea = document.getElementById('results-area');
+    if (resultsArea) {
+        observer.observe(resultsArea, { attributes: true, attributeFilter: ['style'] });
+    }
+</script>
+{% endblock %}
