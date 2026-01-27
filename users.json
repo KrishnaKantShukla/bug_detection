@@ -1,29 +1,3 @@
 [
-    {
-        "id": "1",
-        "first_name": "Krishna Kant",
-        "last_name": "Shukla",
-        "mobile": "9142370229",
-        "email": "javaxcss@gmail.com",
-        "password_hash": "scrypt:32768:8:1$xfoaczd9wW4mFbKp$822f0005a166ff8007198ddd30ed110dc95295a911261fdfb66d1caf42aa7c8e33a9d44ddcea7e1e00fc06c94f9b4b5ce1c2fbcf19621e57af11380737e83e40",
-        "created_at": "2026-01-26T11:28:14.210276"
-    },
-    {
-        "id": "2",
-        "first_name": "Kunal",
-        "last_name": "Kumar",
-        "mobile": "8292651995",
-        "email": "hello@gmail.com",
-        "password_hash": "scrypt:32768:8:1$aHGpbEskcFx5IJ9S$23b1fa1382764fe0231a3b0a7cef5bda5c24acaff85d84753fa06b2beb1bbb39170d423ae913efc96531f14034d8980461c966925ddebf532bd9b51ccc0ed760",
-        "created_at": "2026-01-26T12:02:49.638574"
-    },
-    {
-        "id": "3",
-        "first_name": "Jaswant ",
-        "last_name": "choudhary",
-        "mobile": "9352524868",
-        "email": "csejaswant@gmail.com",
-        "password_hash": "scrypt:32768:8:1$8Ggnd7BvKIpujacL$9cbc1cec89be394a33a4d7c13360662875632cf98db8e87546ce3ab4b233c779b662c767e8a85dcce3e8308cae070bc70039e36f6c6d7879bfb61b95d747baee",
-        "created_at": "2026-01-26T12:14:48.859300"
-    }
+   
 ]
