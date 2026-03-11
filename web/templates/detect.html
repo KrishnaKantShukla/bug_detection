@@ -3,93 +3,192 @@
 {% block title %}Intelligent Bug Detection - BugDetector{% endblock %}
 
 {% block content %}
-<div style="text-align: center; margin-bottom: var(--spacing-xl);">
-    <h1>Intelligent Bug Detection & <span
-            style="background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Auto-Fix</span>
-    </h1>
-    <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: var(--spacing-md) auto;">
-        Upload your source code or paste it directly into our intelligent editor.
-        Our AI engine scans for syntax errors, logical bugs, and security vulnerabilities in real-time.
-    </p>
+<div class="detect-header" style="text-align: center; margin-bottom: 40px; display: flex; flex-direction: column; align-items: center;">
+    <div style="display: inline-block; padding: 6px 16px; background: rgba(99, 102, 241, 0.1); color: var(--primary-color); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; letter-spacing: 0.5px; text-transform: uppercase;">
+          Bug Detection Engine
+    </div>
+    <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 15px; letter-spacing: -1px; line-height: 1.2;">Intelligent Code <span class="gradient-text" style="background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Analysis</span></h1>
+    <p style="color: var(--text-secondary); font-size: 1.15rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">Paste your source code or upload a file. Our neural engine will perform deep static analysis, spot logical flaws, and stream suggested fixes directly to your editor.</p>
 </div>
 
-<div class="row" style="display: flex; gap: var(--spacing-xl); flex-wrap: wrap;">
-
-    <!-- Left Column: Upload -->
-    <div style="flex: 1; min-width: 300px;">
-        <h3 style="margin-bottom: var(--spacing-md);">1. Upload Code</h3>
-        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-            <div class="upload-icon">📂</div>
-            <h4 style="margin-bottom: var(--spacing-sm);">Drag & Drop File</h4>
-            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: var(--spacing-md);">
-                Supports .py, .java, .js, .cpp
-            </p>
-            <button class="btn btn-outline" style="pointer-events: none;">Browse Computer</button>
-            <input type="file" id="fileInput" style="display: none;">
-        </div>
-
-
-    </div>
-
-    <!-- Right Column: Editor -->
-    <div style="flex: 2; min-width: 400px;">
-        <h3 style="margin-bottom: var(--spacing-md);">2. Intelligent Editor</h3>
-
-        <!-- Pro Tip Banner -->
-        <div class="pro-tip-banner">
-            <div class="pro-tip-icon">💡</div>
-            <div class="pro-tip-content">
-                <h5>Pro Tip:</h5>
-                <p>Ensure your code has proper indentation for accurate AI analysis.</p>
+<div class="detect-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; height: 70vh; min-height: 600px;">
+    
+    <!-- LEFT PANE: Editor & Controls -->
+    <div class="editor-pane" style="display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden;">
+        
+        <!-- Action Toolbar -->
+        <div class="ide-toolbar" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color);">
+            <div class="toolbar-left" style="display: flex; align-items: center; gap: 15px;">
+                <button class="btn btn-outline btn-sm upload-btn" style="padding: 6px 12px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;" onclick="document.getElementById('fileInput').click()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload File
+                </button>
+                <input type="file" id="fileInput" style="display: none;" accept=".py,.java,.js,.cpp,.c,.go">
+                <span class="toolbar-hint" style="font-size: 0.85rem; color: var(--text-secondary); opacity: 0.7;">Auto-detecting language...</span>
+            </div>
+            <div class="toolbar-right">
+                <div class="window-controls" style="display: flex; gap: 8px;">
+                    <div class="control-dot red" style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+                    <div class="control-dot yellow" style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+                    <div class="control-dot green" style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+                </div>
             </div>
         </div>
 
-        <div class="editor-window">
+        <!-- Monaco Editor Container -->
+        <div class="ide-editor-wrapper" style="flex: 1; position: relative; background: #1e1e1e;">
             <div class="scan-overlay" id="scan-overlay">
                 <div class="scan-line"></div>
+                <div class="scan-glow" style="position: absolute; top: 0; left: 0; right: 0; height: 100%; background: linear-gradient(to bottom, rgba(99, 102, 241, 0) 0%, rgba(99, 102, 241, 0.05) 50%, rgba(99, 102, 241, 0) 100%); pointer-events: none; opacity: 0; transition: opacity 0.3s;"></div>
             </div>
-
-            <div class="editor-header">
-                <div class="window-controls">
-                    <div class="control-dot red"></div>
-                    <div class="control-dot yellow"></div>
-                    <div class="control-dot green"></div>
-                </div>
-                <div class="editor-title">main.py - BugDetector Editor</div>
-            </div>
-
-            <div class="editor-content-area">
-            <div class="editor-content-area" style="padding: 0; min-height: 400px; display: flex; flex-direction: column;">
-                <div id="monaco-editor-container" style="flex: 1; min-height: 400px; width: 100%; text-align: left;"></div>
-            </div>
+            <div id="monaco-editor-container" style="width: 100%; height: 100%;"></div>
         </div>
-
-        <div
-            style="text-align: right; display: flex; justify-content: flex-end; gap: var(--spacing-md); align-items: center; margin-top: 15px;">
-            <p id="status-text"
-                style="margin-bottom: 0; font-size: 0.9rem; color: var(--text-secondary); opacity: 0; transition: opacity 0.3s;">
-                Scanning code modules...
-            </p>
-            <button id="analyze-btn" class="btn btn-primary" style="min-width: 150px;">
-                <span class="btn-text">Run Analysis</span>
+        
+        <!-- Footer / Analyze Button -->
+        <div class="ide-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(0,0,0,0.1); border-top: 1px solid var(--border-color);">
+            <div class="editor-status" style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-secondary);">
+                <span class="status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+                System Ready.
+            </div>
+            <button id="analyze-btn" class="btn btn-primary btn-run" style="display: flex; align-items: center; gap: 8px; padding: 10px 25px; font-weight: 600;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span class="btn-text">Run AI Analysis</span>
             </button>
         </div>
     </div>
-</div>
 
-<!-- Results Area -->
-<div id="results-area" style="display: none; margin-top: var(--spacing-xl); animation: fadeInUp 0.5s ease;">
-    <h2 style="margin-bottom: var(--spacing-md);">Analysis Report</h2>
-    <div class="editor-window" style="border: 1px solid #10b981;">
-        <div class="editor-header"
-            style="background: rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
-            <div class="editor-title" style="color: #10b981;">✔ Threat Detection Complete</div>
+    <!-- RIGHT PANE: AI Intelligence Output -->
+    <div class="analysis-pane" style="display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden;">
+        
+        <div class="analysis-header" style="padding: 20px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.1);">
+            <h3 style="margin: 0; font-size: 1.2rem; display: flex; align-items: center;">Code Explanation</h3>
         </div>
-        <div id="results-content"
-            style="padding: 20px; font-family: 'Fira Code', monospace; color: #d4d4d4; white-space: pre-wrap; line-height: 1.6;">
+
+        <div class="analysis-content custom-scrollbar" style="flex: 1; padding: 30px; overflow-y: auto; position: relative;">
+            
+            <!-- Empty State (Before Analysis) -->
+            <div id="empty-state" class="empty-state-view active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-secondary);">
+                <div class="radar-container" style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                    <div class="radar-circle" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--primary-color); opacity: 0; animation: radarPulse 3s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;"></div>
+                    <div class="radar-circle" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--primary-color); opacity: 0; animation: radarPulse 3s cubic-bezier(0.215, 0.610, 0.355, 1) infinite; animation-delay: 1s;"></div>
+                    <div class="radar-circle" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--primary-color); opacity: 0; animation: radarPulse 3s cubic-bezier(0.215, 0.610, 0.355, 1) infinite; animation-delay: 2s;"></div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity: 0.5; color: var(--primary-color);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>Awaiting Code Input</h3>
+                <p>Submit your code to trigger the AI vulnerability scanner. The engine will stream its analysis in real-time.</p>
+            </div>
+
+            <!-- Loading State (During Analysis Initialization) -->
+            <div id="loading-state" class="loading-state-view" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-secondary);">
+                <div class="pulse-loader" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); animation: breathing 1.5s infinite alternate; margin-bottom: 20px;"></div>
+                <h4>Initializing Neural Engine...</h4>
+                <p>Analyzing logical structures, scanning for syntax faults, and identifying security risks.</p>
+            </div>
+
+            <!-- Results Stream Container (Must keep IDs for script.js) -->
+            <div id="results-area" class="results-view" style="display: none;">
+                <div id="results-content" class="markdown-preview stream-container" style="animation: fadeInUp 0.4s ease; padding-bottom: 40px;">
+                    <!-- Markdown streams here -->
+                </div>
+            </div>
+
         </div>
     </div>
+
 </div>
+
+<style>
+/* Dashboard Specific Micro-styles */
+.empty-state-view { display: none; }
+.empty-state-view.active { display: flex; }
+
+@keyframes radarPulse {
+    0% { transform: scale(0.3); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes breathing {
+    0% { transform: scale(0.8); box-shadow: 0 0 10px rgba(99,102,241,0.5); }
+    100% { transform: scale(1.2); box-shadow: 0 0 30px rgba(99,102,241,0.8); }
+}
+
+.scan-overlay.scanning .scan-glow {
+    opacity: 1;
+    animation: glowSlide 2s linear infinite;
+}
+
+@keyframes glowSlide {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+/* Markdown Results Typography */
+.markdown-preview {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+.markdown-preview h2, .markdown-preview h3, .markdown-preview h4 {
+    color: var(--text-primary);
+    margin-top: 1.8rem;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+}
+.markdown-preview h2:first-child, .markdown-preview h3:first-child {
+    margin-top: 0;
+}
+.markdown-preview blockquote {
+    border-left: 4px solid var(--primary-color);
+    background: rgba(99, 102, 241, 0.08);
+    padding: 12px 18px;
+    margin: 1.2rem 0;
+    border-radius: 4px;
+    color: #e2e8f0;
+}
+.markdown-preview p {
+    margin-bottom: 1rem;
+}
+.markdown-preview strong {
+    color: var(--text-primary);
+}
+.markdown-preview pre {
+    background: #1e1e1e;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.markdown-preview code {
+    font-family: 'Fira Code', monospace;
+    background: rgba(0,0,0,0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #f8fafc;
+}
+.markdown-preview pre code {
+    background: transparent;
+    padding: 0;
+    color: #d4d4d4;
+}
+.markdown-preview hr {
+    border: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 2rem 0;
+}
+
+@media (max-width: 1100px) {
+    .detect-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    .editor-pane { height: 500px; }
+    .analysis-pane { height: 500px; }
+}
+</style>
 
 <!-- Load Monaco Editor -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs/loader.min.js"></script>
@@ -98,45 +197,86 @@
     require(['vs/editor/editor.main'], function() {
         window.editor = monaco.editor.create(document.getElementById('monaco-editor-container'), {
             value: [
-                '# Paste your Python, Java, or C++ code here...',
-                'def calculate_sum(a, b):',
-                '    return a + b'
+                '# Paste your Python code here...',
+                'def example_function():',
+                '    pass'
             ].join('\n'),
             language: 'python',
-            theme: 'vs-dark',
+            theme: localStorage.getItem('theme') === 'light' ? 'vs' : 'vs-dark',
             automaticLayout: true,
             minimap: { enabled: false },
             fontSize: 14,
+            fontFamily: "'Fira Code', monospace",
             padding: { top: 16 }
         });
-    });
 
-    // Simple inline script to handle the visual scan effect trigger
-    const analyzeBtn = document.getElementById('analyze-btn');
-    const scanOverlay = document.getElementById('scan-overlay');
-    const statusText = document.getElementById('status-text');
-
-    analyzeBtn.addEventListener('click', () => {
-        const code = window.editor ? window.editor.getValue().trim() : '';
-        if (code) {
-            scanOverlay.classList.add('scanning');
-            statusText.style.opacity = '1';
+        // Toggle theme listener for Monaco specifically
+        const themeSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        if(themeSwitch) {
+            themeSwitch.addEventListener('change', (e) => {
+                monaco.editor.setTheme(e.target.checked ? 'vs-dark' : 'vs');
+            });
         }
     });
 
-    // Observer to stop scanning when results appear (simulated check)
-    const observer = new MutationObserver((mutations) => {
+    // Handle File Upload bridging
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            if(window.editor) {
+                window.editor.setValue(e.target.result);
+                document.querySelector('.toolbar-hint').textContent = `Loaded: ${file.name}`;
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    // UI Orchestration for Analysis
+    const analyzeBtnHTML = document.getElementById('analyze-btn');
+    const analyzeBtnText = analyzeBtnHTML.querySelector('.btn-text');
+    const scanOverlayHTML = document.getElementById('scan-overlay');
+    
+    // Panel Views
+    const emptyState = document.getElementById('empty-state');
+    const loadingState = document.getElementById('loading-state');
+    const resultsAreaHTML = document.getElementById('results-area'); // From old layout, mapped mapped here
+
+    // Intercept clicks on the main analyze button here to trigger UI transitions before the fetch in script.js kicks in.
+    analyzeBtnHTML.addEventListener('click', () => {
+        const code = window.editor ? window.editor.getValue().trim() : '';
+        if (code) {
+            // Transform layout states
+            emptyState.style.display = 'none';
+            resultsAreaHTML.style.display = 'none';
+            loadingState.style.display = 'flex';
+            
+            scanOverlayHTML.classList.add('scanning');
+            analyzeBtnText.textContent = 'Scanning...';
+            
+            document.querySelector('.status-indicator').style.background = '#f59e0b';
+            document.querySelector('.status-indicator').style.boxShadow = '0 0 8px #f59e0b';
+            document.querySelector('.editor-status').innerHTML = '<span class="status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 8px #f59e0b; display: inline-block;"></span> Transmitting data...';
+        }
+    });
+
+    // Observer to detect when `script.js` shows the results area so we can stop the loading indicator
+    const resultObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.target.style.display !== 'none') {
-                scanOverlay.classList.remove('scanning');
-                statusText.style.opacity = '0';
+                // Fetch is getting data, swap panels
+                loadingState.style.display = 'none';
+                scanOverlayHTML.classList.remove('scanning');
+                analyzeBtnText.textContent = 'Run AI Analysis';
+                
+                document.querySelector('.editor-status').innerHTML = '<span class="status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block;"></span> System Ready.';
             }
         });
     });
 
-    const resultsArea = document.getElementById('results-area');
-    if (resultsArea) {
-        observer.observe(resultsArea, { attributes: true, attributeFilter: ['style'] });
+    if (resultsAreaHTML) {
+        resultObserver.observe(resultsAreaHTML, { attributes: true, attributeFilter: ['style'] });
     }
 </script>
 {% endblock %}

@@ -128,7 +128,45 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    user = storage.get_user_by_id(session['user_id'])
+    history = user.get('history', []) if user else []
+    
+    total_analyzed = sum(1 for item in history if item.get('type') == 'analysis')
+    total_generated = sum(1 for item in history if item.get('type') == 'test_generation')
+    
+    unique_days = set()
+    for item in history:
+        if 'created_at' in item:
+            unique_days.add(item['created_at'][:10])
+            
+    streak = 0
+    if unique_days:
+        try:
+            from datetime import datetime, timedelta
+            sorted_dates = sorted([datetime.strptime(d, "%Y-%m-%d").date() for d in unique_days], reverse=True)
+            today = datetime.utcnow().date()
+            
+            if sorted_dates[0] == today or sorted_dates[0] == (today - timedelta(days=1)):
+                streak = 1
+                current_date = sorted_dates[0]
+                for d in sorted_dates[1:]:
+                    if (current_date - d).days == 1:
+                        streak += 1
+                        current_date = d
+                    else:
+                        break
+        except Exception as e:
+            app.logger.error(f"Streak calculation error: {e}")
+            streak = len(unique_days)
+
+    stats = {
+        'total_analyzed': total_analyzed,
+        'total_generated': total_generated,
+        'streak': streak,
+        'unique_days': list(unique_days)
+    }
+    
+    return render_template('dashboard.html', stats=stats)
 
 # --- Existing Features (Protected) ---
 

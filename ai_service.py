@@ -31,14 +31,22 @@ def analyze_code_snippet(code):
 You are an expert Python developer and code reviewer. Review the following code snippet and report any logical bugs, syntax errors, or major security flaws.
 Keep your response extremely simple, clear, and easy for a beginner to understand. Do NOT use any emojis.
 
-For each issue found, format your response exactly like this:
-- **Bug**: [Clearly state what the bug is]
-- **Impact**: [Explain simply what errors or bad behavior this may cause]
-- **Fix**: [Provide the possible fix or corrected code]
+For each issue found, format your response EXACTLY like this with clear spacing:
 
-If there are no issues, just reply with: "No major bugs detected in this code snippet." Do NOT provide a Corrected Code Snippet block if there are no bugs.
+### Issue: [Short clear name of the bug]
+> **Impact:** [Explain simply what errors or bad behavior this may cause]
 
-CRITICAL: If you found bugs and suggested fixes, you MUST provide the entire, fully corrected version of the code snippet at the very end of your response. 
+**Recommended Fix:**
+[Provide the brief explanation of the fix and the possible code snippet to fix this specific part]
+
+---
+
+If there are no issues, just reply with:
+### Code Status: Secured
+> No major bugs detected in this code snippet. Your logic appears sound.
+(Do NOT provide a Corrected Code Snippet block if there are no bugs.)
+
+CRITICAL: If you found bugs and suggested fixes, you MUST provide the entire, fully corrected version of the code snippet at the very end of your response under the heading "### Full Corrected Code". 
 Enclose the full corrected code in a standard markdown code block (e.g., ```python ... ```).
 
 Code to analyze:
@@ -61,52 +69,51 @@ Code to analyze:
     bugs: list[str] = []
     if "== True" in code or "== False" in code:
         bugs.append(
-            "- **Bug**: You are comparing a value directly to `True` or `False` (e.g., `if x == True:`).\n"
-            "- **Impact**: This is unnecessary and goes against standard Python styling rules (PEP 8). It makes code slightly harder to read.\n"
-            "- **Fix**: Evaluate the boolean directly. Write `if x:` instead of `if x == True:`."
+            "### Issue: Redundant Boolean Comparison\n"
+            "> **Impact:** This goes against standard Python styling rules (PEP 8) and makes code harder to read.\n\n"
+            "**Recommended Fix:**\n"
+            "Evaluate the boolean directly. Write `if x:` instead of `if x == True:`."
         )
         code = code.replace("== True", "")
         code = code.replace("== False", "not ")
     if "except:" in code:
         bugs.append(
-            "- **Bug**: You are using a bare `except:` block to catch errors.\n"
-            "- **Impact**: This will catch *every* error, even ones you don't expect like the user trying to exit the script. This hides true bugs and makes debugging very hard.\n"
-            "- **Fix**: Catch specific errors instead, like `except ValueError:` or at least `except Exception as e:`."
+            "### Issue: Bare `except` Block\n"
+            "> **Impact:** This catches *every* error type, hiding true bugs, preventing script exit, and making debugging a nightmare.\n\n"
+            "**Recommended Fix:**\n"
+            "Catch specific errors instead, like `except ValueError:`, or at minimum `except Exception as e:`."
         )
         code = code.replace("except:", "except Exception as e:")
     if "eval(" in code:
         bugs.append(
-            "- **Bug**: The code uses the `eval()` function.\n"
-            "- **Impact**: `eval()` runs whatever string you pass it as actual Python code. If a malicious user controls that string, they can hack your server or run dangerous commands.\n"
-            "- **Fix**: Avoid using `eval()` completely. If you are trying to read a dictionary from a string, use standard JSON or `ast.literal_eval()`."
+            "### Issue: Dangerous Use of `eval()`\n"
+            "> **Impact:** `eval()` executes any string passed to it. If untrusted input reaches it, attackers gain full remote code execution.\n\n"
+            "**Recommended Fix:**\n"
+            "Avoid `eval()`. Use `ast.literal_eval()` for evaluating strings into literal Python dictionaries/lists."
         )
         code = code.replace("eval(", "ast.literal_eval(")
         
     if bugs:
-        report = "### AI Analysis Report (Simulated Fallback)\n\n"
+        report: str = "## AI Analysis Report (Simulated)\n\n"
         if "def " not in code and "class " not in code:
-            report += "#### Architecture & Structure\n"
-            report += "The provided snippet appears to be a basic script without encapsulated functions or classes.\n"
-            report += "**Recommendation:** Encapsulate your logic within functions or classes. This improves reusability, testability, and prevents namespace pollution.\n\n"
+            report += "### Architecture & Structure\n"
+            report += "The provided snippet lacks encapsulating functions or classes.\n\n"
+            report += "**Recommendation:** Encapsulate your logic to improve reusability and prevent namespace pollution.\n\n---\n\n"
         elif "def " in code:
-            report += "#### Architecture & Structure\n"
-            report += "Function definitions detected. The code demonstrates a basic level of modularity.\n\n"
+            report += "### Architecture & Structure\n"
+            report += "Function definitions detected. Basic level of modularity is established.\n\n---\n\n"
             
-        report += "Issues found in your code:\n\n"
         for bug in bugs:
-            report += f"{bug}\n\n"
+            report += f"{bug}\n\n---\n\n"
             
-        report += "#### Summary Recommendation\n"
-        report += "Please review the flagged items above. Addressing these will result in more robust, secure, and idiomatic code.\n\n"
-        
-        report += "### Corrected Code Snippet\n"
-        report += "Here is the fully fixed version of your code:\n\n"
+        report += "### Full Corrected Code\n"
+        report += "Here is the fully fixed version of your code implementing the recommendations:\n\n"
         report += "```python\n"
         report += code  # Provide the heuristically altered code as the fix
         report += "\n```\n"
     else:
-        report = "### AI Analysis Report (Simulated Fallback)\n\n"
-        report += "No major bugs detected in this code snippet. Your code looks clean and doesn't require any structural fixes."
+        report = "### Code Status: Secured\n"
+        report += "> No major bugs detected in this code snippet. Your logic appears sound and conforms to expected patterns."
     
     # Stream simulated output
     for chunk in report.split(' '):

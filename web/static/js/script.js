@@ -83,6 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
             analyzeBtn.textContent = 'Analyzing...';
             analyzeBtn.disabled = true;
             resultsArea.style.display = 'none';
+            
+            // Clear any previously injected Fix button
+            const oldFixBtn = document.getElementById('ai-fix-btn-container');
+            if (oldFixBtn) oldFixBtn.remove();
 
             try {
                 const response = await fetch('/api/analyze', {
@@ -110,7 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (done) break;
                     accumulatedText += decoder.decode(value, { stream: true });
                     // Parse markdown to HTML live
-                    resultsContent.innerHTML = window.marked ? window.marked.parse(accumulatedText) : accumulatedText;
+                    if (typeof marked !== 'undefined') {
+                        resultsContent.innerHTML = marked.parse ? marked.parse(accumulatedText) : marked(accumulatedText);
+                    } else {
+                        resultsContent.innerHTML = accumulatedText;
+                        console.warn('marked.js is not loaded');
+                    }
                 }
                 
                 // --- One-Click Fix Logic ---
@@ -125,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (lastCodeBlock && window.editor) {
                     // Inject the Apply Fix button dynamically into the DOM
                     const fixBtnContainer = document.createElement('div');
+                    fixBtnContainer.id = 'ai-fix-btn-container';
                     fixBtnContainer.style.textAlign = 'right';
                     fixBtnContainer.style.marginTop = 'var(--spacing-md)';
                     

@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2.1">
+    
+    <!-- External Scripts (Loaded early to avoid Monaco AMD collision) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
 </head>
 
 <body>
@@ -118,8 +121,7 @@
         {% block footer %}{% endblock %}
     </main>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Internal Scripts -->
     <script src="{{ url_for('static', filename='js/script.js') }}?v=1.3"></script>
 </body>
 

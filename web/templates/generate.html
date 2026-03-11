@@ -3,77 +3,175 @@
 {% block title %}Test Generation - BugDetector{% endblock %}
 
 {% block content %}
-<h1>Automated Test Case Generation</h1>
-<p>Automatically generate comprehensive unit tests for your codebase.</p>
+<div class="detect-header" style="text-align: center; margin-bottom: 40px; display: flex; flex-direction: column; align-items: center;">
+    <div style="display: inline-block; padding: 6px 16px; background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; letter-spacing: 0.5px; text-transform: uppercase;">
+        Automated Test Engine
+    </div>
+    <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 15px; letter-spacing: -1px; line-height: 1.2;">Zero-Shot <span class="gradient-text" style="background: linear-gradient(135deg, #34d399 0%, #059669 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Test Generation</span></h1>
+    <p style="color: var(--text-secondary); font-size: 1.15rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">Instantly synthesize comprehensive unit tests for your code. Select your framework, paste your logic, and let the AI build your testing harness.</p>
+</div>
 
-<div class="row" style="display: flex; gap: var(--spacing-xl); flex-wrap: wrap;">
-
-    <!-- Left Column: Settings -->
-    <div style="flex: 1; min-width: 300px;">
-        <div class="card">
-            <h3>Configuration</h3>
-            <form style="display: flex; flex-direction: column; gap: var(--spacing-md); margin-top: var(--spacing-sm);">
-                <div>
-                    <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-xs);">Language / Framework</label>
-                    <select id="test-lang-select"
-                        style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border-color); width: 100%; max-width: 300px; background-color: rgba(255,255,255,0.1); color: var(--text-primary);">
-                        <option value="python">PyTest (Python)</option>
-                        <option value="python">Unittest (Python)</option>
-                        <option value="java">JUnit (Java)</option>
-                        <option value="javascript">Jest (JavaScript)</option>
-                    </select>
+<div class="detect-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; height: 70vh; min-height: 600px;">
+    
+    <!-- LEFT PANE: Editor & Controls -->
+    <div class="editor-pane" style="display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden;">
+        
+        <!-- Action Toolbar -->
+        <div class="ide-toolbar" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
+            <div class="toolbar-left" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <select id="test-lang-select" style="padding: 6px 10px; border-radius: 4px; border: 1px solid var(--border-color); background-color: rgba(255,255,255,0.05); color: var(--text-primary); font-size: 0.85rem;">
+                    <option value="python">PyTest (Python)</option>
+                    <option value="python2">Unittest (Python)</option>
+                    <option value="java">JUnit (Java)</option>
+                    <option value="javascript">Jest (JavaScript)</option>
+                </select>
+                <div style="display: flex; gap: 10px; align-items: center; color: var(--text-secondary); font-size: 0.85rem;">
+                     <label style="cursor: pointer; display: flex; align-items: center; gap: 4px;"><input type="radio" name="coverage" checked> Standard</label>
+                     <label style="cursor: pointer; display: flex; align-items: center; gap: 4px;"><input type="radio" name="coverage"> Strict (95%)</label>
                 </div>
+            </div>
+            <div class="window-controls" style="display: flex; gap: 8px;">
+                <div class="control-dot red" style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+                <div class="control-dot yellow" style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+                <div class="control-dot green" style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+            </div>
+        </div>
 
-                <div>
-                    <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-xs);">Coverage Target</label>
-                    <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
-                        <label style="cursor: pointer;"><input type="radio" name="coverage" checked> Standard (80%)</label>
-                        <label style="cursor: pointer;"><input type="radio" name="coverage"> High (95%)</label>
-                        <label style="cursor: pointer;"><input type="radio" name="coverage"> Logic Only</label>
-                    </div>
-                </div>
-
-                <div class="bg-secondary" style="padding: var(--spacing-md); border-radius: var(--radius-md); background: rgba(99, 102, 241, 0.05);">
-                    <button type="button" id="generate-btn" class="btn btn-primary" style="width: 100%;">
-                        Generate Test Suite
-                    </button>
-                </div>
-            </form>
+        <!-- Monaco Editor Container -->
+        <div class="ide-editor-wrapper" style="flex: 1; position: relative; background: #1e1e1e;">
+            <div class="scan-overlay" id="gen-scan-overlay">
+                <div class="scan-glow" style="position: absolute; top: 0; left: 0; right: 0; height: 100%; background: linear-gradient(to bottom, rgba(16, 185, 129, 0) 0%, rgba(16, 185, 129, 0.05) 50%, rgba(16, 185, 129, 0) 100%); pointer-events: none; opacity: 0; transition: opacity 0.3s;"></div>
+            </div>
+            <div id="monaco-gen-editor-container" style="width: 100%; height: 100%;"></div>
+        </div>
+        
+        <!-- Footer / Analyze Button -->
+        <div class="ide-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(0,0,0,0.1); border-top: 1px solid var(--border-color);">
+            <div class="editor-status" id="gen-editor-status" style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-secondary);">
+                <span class="status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+                System Ready.
+            </div>
+            <button id="generate-btn" class="btn btn-primary btn-run" style="background: #059669; border: 1px solid #047857; color: white; display: flex; align-items: center; gap: 8px; padding: 10px 25px; font-weight: 600;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <span class="btn-text">Generate Test Suite</span>
+            </button>
         </div>
     </div>
 
-    <!-- Right Column: Code Input -->
-    <div style="flex: 2; min-width: 400px;">
-        <h3 style="margin-bottom: var(--spacing-md);">Source Code</h3>
-        <div class="editor-window">
-            <div class="editor-header">
-                <div class="window-controls">
-                    <div class="control-dot red"></div>
-                    <div class="control-dot yellow"></div>
-                    <div class="control-dot green"></div>
+    <!-- RIGHT PANE: AI Output -->
+    <div class="analysis-pane" style="display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden;">
+        
+        <div class="analysis-header" style="padding: 20px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.1);">
+            <h3 style="margin: 0; font-size: 1.2rem; display: flex; align-items: center;">Synthesized Tests</h3>
+        </div>
+
+        <div class="analysis-content custom-scrollbar" style="flex: 1; padding: 30px; overflow-y: auto; position: relative;">
+            
+            <!-- Empty State -->
+            <div id="gen-empty-state" class="empty-state-view active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-secondary);">
+                <div class="radar-container" style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                    <div class="radar-circle" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid #10b981; opacity: 0; animation: radarPulse 3s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;"></div>
+                    <div class="radar-circle" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid #10b981; opacity: 0; animation: radarPulse 3s cubic-bezier(0.215, 0.610, 0.355, 1) infinite; animation-delay: 1s;"></div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity: 0.5; color: #10b981;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
                 </div>
-                <div class="editor-title">Paste Code Here</div>
+                <h3>Awaiting Code Input</h3>
+                <p>Submit your functions or classes to generate a comprehensive suite. We handle mocking, boundaries, and logic.</p>
             </div>
-            <div class="editor-content-area" style="padding: 0; min-height: 250px; display: flex; flex-direction: column;">
-                <div id="monaco-gen-editor-container" style="flex: 1; min-height: 250px; width: 100%; text-align: left;"></div>
+
+            <!-- Loading State -->
+            <div id="gen-loading-state" class="loading-state-view" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-secondary);">
+                <div class="pulse-loader" style="width: 40px; height: 40px; border-radius: 50%; background: #10b981; animation: breathingGreen 1.5s infinite alternate; margin-bottom: 20px;"></div>
+                <h4>Engineering Tests...</h4>
+                <p>Structuring assertions, wiring dependencies, and predicting edge boundaries.</p>
             </div>
+
+            <!-- Results Stream Container -->
+            <div id="gen-results-area" class="results-view" style="display: none;">
+                <div id="gen-results-content" class="markdown-preview stream-container" style="animation: fadeInUp 0.4s ease; padding-bottom: 40px;">
+                    <!-- Markdown streams here -->
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
-<!-- Results Area -->
-<div id="gen-results-area" style="display: none; margin-top: var(--spacing-xl); animation: fadeInUp 0.5s ease;">
-    <h2 style="margin-bottom: var(--spacing-md);">Generated Tests</h2>
-    <div class="editor-window" style="border: 1px solid var(--primary-color);">
-        <div class="editor-header"
-            style="background: rgba(99, 102, 241, 0.1); border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
-            <div class="editor-title" style="color: var(--primary-color);">✔ Test Suite Ready</div>
-        </div>
-        <div id="gen-results-content"
-            style="padding: 20px; font-family: 'Fira Code', monospace; color: #d4d4d4; white-space: pre-wrap; line-height: 1.6; background: #0f172a;">
-        </div>
-    </div>
-</div>
+<style>
+/* Micro-styles */
+.empty-state-view { display: none; }
+.empty-state-view.active { display: flex; }
+
+select option {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+@keyframes radarPulse {
+    0% { transform: scale(0.3); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes breathingGreen {
+    0% { transform: scale(0.8); box-shadow: 0 0 10px rgba(16,185,129,0.5); }
+    100% { transform: scale(1.2); box-shadow: 0 0 30px rgba(16,185,129,0.8); }
+}
+
+.scan-overlay.scanning .scan-glow {
+    opacity: 1;
+    animation: glowSlide 2s linear infinite;
+}
+
+@keyframes glowSlide {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+/* Re-use typography from markdown parser */
+.markdown-preview {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+.markdown-preview h2, .markdown-preview h3, .markdown-preview h4 {
+    color: var(--text-primary);
+    margin-top: 1.8rem;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+}
+.markdown-preview h2:first-child, .markdown-preview h3:first-child, .markdown-preview h4:first-child {
+    margin-top: 0;
+}
+.markdown-preview pre {
+    background: #1e1e1e;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.markdown-preview code {
+    font-family: 'Fira Code', monospace;
+    background: rgba(0,0,0,0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #f8fafc;
+}
+.markdown-preview pre code {
+    background: transparent;
+    padding: 0;
+    color: #d4d4d4;
+}
+
+@media (max-width: 1100px) {
+    .detect-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    .editor-pane, .analysis-pane { height: 500px; }
+}
+</style>
 
 <!-- Load Monaco Editor -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs/loader.min.js"></script>
@@ -82,21 +180,49 @@
     require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs' }});
     require(['vs/editor/editor.main'], function() {
         window.genEditor = monaco.editor.create(document.getElementById('monaco-gen-editor-container'), {
-            value: 'def my_function():\n    pass',
+            value: [
+                '# Paste your logic here to generate tests...',
+                'class ShoppingCart:',
+                '    def __init__(self):',
+                '        self.items = []',
+                '',
+                '    def add_item(self, item, price):',
+                '        if price < 0:',
+                '            raise ValueError("Price cannot be negative")',
+                '        self.items.append({"name": item, "price": price})',
+                '',
+                '    def get_total(self):',
+                '        return sum(item["price"] for item in self.items)'
+            ].join('\n'),
             language: 'python',
-            theme: 'vs-dark',
+            theme: localStorage.getItem('theme') === 'light' ? 'vs' : 'vs-dark',
             automaticLayout: true,
             minimap: { enabled: false },
             fontSize: 14,
+            fontFamily: "'Fira Code', monospace",
             padding: { top: 16 }
         });
+        
+        const themeSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        if(themeSwitch) {
+            themeSwitch.addEventListener('change', (e) => {
+                monaco.editor.setTheme(e.target.checked ? 'vs-dark' : 'vs');
+            });
+        }
     });
 
+    // Frontend Orchestration
     document.addEventListener('DOMContentLoaded', () => {
         const generateBtn = document.getElementById('generate-btn');
+        const generateBtnText = generateBtn.querySelector('.btn-text');
         const langSelect = document.getElementById('test-lang-select');
+        
+        const emptyState = document.getElementById('gen-empty-state');
+        const loadingState = document.getElementById('gen-loading-state');
         const resultsArea = document.getElementById('gen-results-area');
         const resultsContent = document.getElementById('gen-results-content');
+        const scanOverlayHTML = document.getElementById('gen-scan-overlay');
+        const editorStatusHTML = document.getElementById('gen-editor-status');
 
         if (generateBtn) {
             generateBtn.addEventListener('click', async () => {
@@ -108,10 +234,16 @@
                     return;
                 }
 
-                // UI Loading State
-                generateBtn.textContent = 'Generating...';
-                generateBtn.disabled = true;
+                // UI Loading State Transition
+                emptyState.style.display = 'none';
                 resultsArea.style.display = 'none';
+                loadingState.style.display = 'flex';
+                
+                scanOverlayHTML.classList.add('scanning');
+                generateBtnText.textContent = 'Engineering...';
+                generateBtn.disabled = true;
+                
+                editorStatusHTML.innerHTML = '<span class="status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 8px #f59e0b; display: inline-block;"></span> Designing assertions...';
 
                 try {
                     const response = await fetch('/api/generate_tests', {
@@ -122,30 +254,41 @@
                         body: JSON.stringify({ code: code, language: language })
                     });
 
+                    loadingState.style.display = 'none';
+                    scanOverlayHTML.classList.remove('scanning');
+                    editorStatusHTML.innerHTML = '<span class="status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block;"></span> System Ready.';
+
                     if (!response.ok) {
                         alert("Error generating tests from server.");
                         return;
                     }
                     
-                    resultsContent.textContent = "";
+                    resultsContent.innerHTML = "";
                     resultsArea.style.display = 'block';
-                    resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder("utf-8");
+                    let accumulatedText = "";
                     
                     while (true) {
                         const { done, value } = await reader.read();
                         if (done) break;
-                        resultsContent.textContent += decoder.decode(value, { stream: true });
+                        accumulatedText += decoder.decode(value, { stream: true });
+                        // Render with Markdown if available
+                        if (typeof marked !== 'undefined') {
+                            resultsContent.innerHTML = marked.parse ? marked.parse(accumulatedText) : marked(accumulatedText);
+                        } else {
+                            resultsContent.innerHTML = accumulatedText;
+                        }
                     }
 
                 } catch (error) {
                     console.error('Error:', error);
                     alert("Failed to connect to the server.");
+                    loadingState.style.display = 'none';
+                    scanOverlayHTML.classList.remove('scanning');
                 } finally {
-                    // Reset UI State
-                    generateBtn.textContent = 'Generate Test Suite';
+                    generateBtnText.textContent = 'Generate Test Suite';
                     generateBtn.disabled = false;
                 }
             });
