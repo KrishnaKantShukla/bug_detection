@@ -1,6 +1,6 @@
 #  Bug Detector – Frontend Interface
 
-![Website Preview](assets/preview.png)
+![Website Preview](assets/image.png)
 
 A modern and responsive frontend interface for a code analysis platform.  
 This project demonstrates a professional UI for a bug detection system, including authentication flow, code upload interface, and results display layout.

@@ -1,14 +1,57 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+import os
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash, Response
 from functools import wraps
+from flask_wtf.csrf import CSRFProtect
+from dotenv import load_dotenv
+import logging
+from logging.handlers import RotatingFileHandler
+
+from models import db
 import storage
 import auth
+import ai_service
+
+load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
-app.secret_key = 'bug_detection_secret_key_123'  # Required for session management
+app.secret_key = os.environ.get('SECRET_KEY', 'bug_detection_secret_key_production')
+
+# Database Configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///bugdetector.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize Extensions
+db.init_app(app)
+csrf = CSRFProtect(app)
 
 # Initialize DB on startup
-storage.init_db()
+with app.app_context():
+    storage.init_db()
+
+# Configure Logging
+if not app.debug:
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
+    file_handler = RotatingFileHandler('logs/bugdetector.log', maxBytes=102400, backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('BugDetector instance startup')
+
+# Error Handlers
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    app.logger.error(f'Server Error: {error}')
+    return render_template('500.html'), 500
 
 # Login Required Decorator
 def login_required(f):
@@ -100,22 +143,63 @@ def generate():
     return render_template('generate.html')
 
 @app.route('/api/analyze', methods=['POST'])
+@csrf.exempt
 def analyze_code():
-    # API endpoints might need different auth, but for now we'll leave it or protect it
-    # If this is called by AJAX from the frontend, session cookie should work.
-    # if 'user_id' not in session:
-    #     return jsonify({'error': 'Unauthorized'}), 401
-
     data = request.get_json()
     code = data.get('code', '')
+    user_id = session.get('user_id')
 
     if not code:
         return jsonify({'error': 'No code provided'}), 400
 
-    # Mock Response for now
-    mock_result = f"Analysis Report:\n\n1. Syntax Check: OK\n2. Style: PEP8 violations found.\n3. Bug Probability: 15%\n\nSuggested Fix: Add docstrings to your functions.\n\n(Analyzed {len(code)} characters)"
+    def generate():
+        full_result = ""
+        for chunk in ai_service.analyze_code_snippet(code):
+            full_result += chunk
+            yield chunk
+            
+        with app.app_context():
+            if user_id:
+                storage.save_history(user_id, 'analysis', code, full_result)
+
+    return Response(generate(), mimetype='text/plain')
+
+@app.route('/api/generate_tests', methods=['POST'])
+@csrf.exempt
+def generate_tests():
+    data = request.get_json()
+    code = data.get('code', '')
+    language = data.get('language', 'python')
+    user_id = session.get('user_id')
+
+    if not code:
+        return jsonify({'error': 'No code provided'}), 400
+
+    def generate():
+        full_result = ""
+        for chunk in ai_service.generate_test_cases(code, language):
+            full_result += chunk
+            yield chunk
+            
+        with app.app_context():
+            if user_id:
+                storage.save_history(user_id, 'test_generation', code, full_result)
+
+    return Response(generate(), mimetype='text/plain')
+
+@app.route('/api/increment_score', methods=['POST'])
+@csrf.exempt
+def increment_score():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+        
+    data = request.get_json()
+    points = data.get('points', 0)
     
-    return jsonify({'result': mock_result})
+    success, new_score = storage.add_score(session['user_id'], points)
+    if success:
+        return jsonify({'success': True, 'new_score': new_score})
+    return jsonify({'error': 'Failed to update score'}), 500
 
 @app.route('/donate')
 def donate():

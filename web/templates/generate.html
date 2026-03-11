@@ -6,42 +6,150 @@
 <h1>Automated Test Case Generation</h1>
 <p>Automatically generate comprehensive unit tests for your codebase.</p>
 
-<div class="card">
-    <h3>Configuration</h3>
-    <form style="display: flex; flex-direction: column; gap: var(--spacing-md); margin-top: var(--spacing-sm);">
-        <div>
-            <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-xs);">Test Framework</label>
-            <select
-                style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border-color); width: 100%; max-width: 300px; background-color: rgba(255,255,255,0.1); color: var(--text-primary);">
-                <option>PyTest (Python)</option>
-                <option>Unittest (Python)</option>
-                <option>JUnit (Java)</option>
-                <option>Jest (JavaScript)</option>
-            </select>
-        </div>
+<div class="row" style="display: flex; gap: var(--spacing-xl); flex-wrap: wrap;">
 
-        <div>
-            <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-xs);">Coverage Target</label>
-            <div style="display: flex; gap: var(--spacing-md);">
-                <label style="cursor: pointer;"><input type="radio" name="coverage" checked> Standard (80%)</label>
-                <label style="cursor: pointer;"><input type="radio" name="coverage"> High (95%)</label>
-                <label style="cursor: pointer;"><input type="radio" name="coverage"> Critical Logic Only</label>
+    <!-- Left Column: Settings -->
+    <div style="flex: 1; min-width: 300px;">
+        <div class="card">
+            <h3>Configuration</h3>
+            <form style="display: flex; flex-direction: column; gap: var(--spacing-md); margin-top: var(--spacing-sm);">
+                <div>
+                    <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-xs);">Language / Framework</label>
+                    <select id="test-lang-select"
+                        style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border-color); width: 100%; max-width: 300px; background-color: rgba(255,255,255,0.1); color: var(--text-primary);">
+                        <option value="python">PyTest (Python)</option>
+                        <option value="python">Unittest (Python)</option>
+                        <option value="java">JUnit (Java)</option>
+                        <option value="javascript">Jest (JavaScript)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-xs);">Coverage Target</label>
+                    <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
+                        <label style="cursor: pointer;"><input type="radio" name="coverage" checked> Standard (80%)</label>
+                        <label style="cursor: pointer;"><input type="radio" name="coverage"> High (95%)</label>
+                        <label style="cursor: pointer;"><input type="radio" name="coverage"> Logic Only</label>
+                    </div>
+                </div>
+
+                <div class="bg-secondary" style="padding: var(--spacing-md); border-radius: var(--radius-md); background: rgba(99, 102, 241, 0.05);">
+                    <button type="button" id="generate-btn" class="btn btn-primary" style="width: 100%;">
+                        Generate Test Suite
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Code Input -->
+    <div style="flex: 2; min-width: 400px;">
+        <h3 style="margin-bottom: var(--spacing-md);">Source Code</h3>
+        <div class="editor-window">
+            <div class="editor-header">
+                <div class="window-controls">
+                    <div class="control-dot red"></div>
+                    <div class="control-dot yellow"></div>
+                    <div class="control-dot green"></div>
+                </div>
+                <div class="editor-title">Paste Code Here</div>
+            </div>
+            <div class="editor-content-area" style="padding: 0; min-height: 250px; display: flex; flex-direction: column;">
+                <div id="monaco-gen-editor-container" style="flex: 1; min-height: 250px; width: 100%; text-align: left;"></div>
             </div>
         </div>
-
-        <div class="bg-secondary" style="padding: var(--spacing-md);">
-            <h4>Ready to Generate?</h4>
-            <p style="font-size: 0.9rem;">Upload your source files in the Bug Detection tab first, then click below.</p>
-            <button type="button" class="btn btn-primary" style="margin-top: var(--spacing-sm);">Generate Test
-                Suite</button>
-        </div>
-    </form>
-</div>
-
-<div class="card">
-    <h3>Generated Tests Preview</h3>
-    <div class="bg-secondary" style="padding: var(--spacing-xl); text-align: center; color: var(--text-secondary);">
-        <em>No tests generated yet. Start the process above.</em>
     </div>
 </div>
+
+<!-- Results Area -->
+<div id="gen-results-area" style="display: none; margin-top: var(--spacing-xl); animation: fadeInUp 0.5s ease;">
+    <h2 style="margin-bottom: var(--spacing-md);">Generated Tests</h2>
+    <div class="editor-window" style="border: 1px solid var(--primary-color);">
+        <div class="editor-header"
+            style="background: rgba(99, 102, 241, 0.1); border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
+            <div class="editor-title" style="color: var(--primary-color);">✔ Test Suite Ready</div>
+        </div>
+        <div id="gen-results-content"
+            style="padding: 20px; font-family: 'Fira Code', monospace; color: #d4d4d4; white-space: pre-wrap; line-height: 1.6; background: #0f172a;">
+        </div>
+    </div>
+</div>
+
+<!-- Load Monaco Editor -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs/loader.min.js"></script>
+<script>
+    // Initialize Monaco
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        window.genEditor = monaco.editor.create(document.getElementById('monaco-gen-editor-container'), {
+            value: 'def my_function():\n    pass',
+            language: 'python',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            minimap: { enabled: false },
+            fontSize: 14,
+            padding: { top: 16 }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const generateBtn = document.getElementById('generate-btn');
+        const langSelect = document.getElementById('test-lang-select');
+        const resultsArea = document.getElementById('gen-results-area');
+        const resultsContent = document.getElementById('gen-results-content');
+
+        if (generateBtn) {
+            generateBtn.addEventListener('click', async () => {
+                const code = window.genEditor ? window.genEditor.getValue().trim() : '';
+                const language = langSelect.value;
+                
+                if (!code) {
+                    alert("Please enter some code to generate tests for.");
+                    return;
+                }
+
+                // UI Loading State
+                generateBtn.textContent = 'Generating...';
+                generateBtn.disabled = true;
+                resultsArea.style.display = 'none';
+
+                try {
+                    const response = await fetch('/api/generate_tests', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ code: code, language: language })
+                    });
+
+                    if (!response.ok) {
+                        alert("Error generating tests from server.");
+                        return;
+                    }
+                    
+                    resultsContent.textContent = "";
+                    resultsArea.style.display = 'block';
+                    resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder("utf-8");
+                    
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        resultsContent.textContent += decoder.decode(value, { stream: true });
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert("Failed to connect to the server.");
+                } finally {
+                    // Reset UI State
+                    generateBtn.textContent = 'Generate Test Suite';
+                    generateBtn.disabled = false;
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

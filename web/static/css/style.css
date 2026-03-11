@@ -653,6 +653,7 @@ select:focus {
     height: 40px;
     position: relative;
     width: 76px;
+    margin-bottom: 0;
 }
 
 .theme-switch input {
@@ -795,6 +796,36 @@ input:checked+.slider .icon-moon {
 
 .dot.yellow {
     background: #f59e0b;
+}
+
+/* =========================================
+   9. MICRO-ANIMATIONS & GAMIFICATION
+   ========================================= */
+.pulse-anim {
+    animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+}
+
+@keyframes pulse {
+    to {
+        box-shadow: 0 0 0 15px rgba(99, 102, 241, 0);
+    }
+}
+
+.xp-particle {
+    position: fixed;
+    color: #10b981;
+    font-weight: 900;
+    font-size: 1.5rem;
+    pointer-events: none;
+    z-index: 9999;
+    animation: floatUp 1s ease-out forwards;
+    text-shadow: 0 2px 10px rgba(16, 185, 129, 0.5);
+}
+
+@keyframes floatUp {
+    0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -60px) scale(1.5); }
 }
 
 .dot.green {

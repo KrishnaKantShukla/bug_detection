@@ -59,14 +59,13 @@
             </div>
 
             <div class="editor-content-area">
-                <textarea id="code-input" class="custom-textarea" placeholder="# Paste your Python, Java, or C++ code here...
-def calculate_sum(a, b):
-    return a + b"></textarea>
+            <div class="editor-content-area" style="padding: 0; min-height: 400px; display: flex; flex-direction: column;">
+                <div id="monaco-editor-container" style="flex: 1; min-height: 400px; width: 100%; text-align: left;"></div>
             </div>
         </div>
 
         <div
-            style="text-align: right; display: flex; justify-content: flex-end; gap: var(--spacing-md); align-items: center;">
+            style="text-align: right; display: flex; justify-content: flex-end; gap: var(--spacing-md); align-items: center; margin-top: 15px;">
             <p id="status-text"
                 style="margin-bottom: 0; font-size: 0.9rem; color: var(--text-secondary); opacity: 0; transition: opacity 0.3s;">
                 Scanning code modules...
@@ -92,16 +91,33 @@ def calculate_sum(a, b):
     </div>
 </div>
 
+<!-- Load Monaco Editor -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs/loader.min.js"></script>
 <script>
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        window.editor = monaco.editor.create(document.getElementById('monaco-editor-container'), {
+            value: [
+                '# Paste your Python, Java, or C++ code here...',
+                'def calculate_sum(a, b):',
+                '    return a + b'
+            ].join('\n'),
+            language: 'python',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            minimap: { enabled: false },
+            fontSize: 14,
+            padding: { top: 16 }
+        });
+    });
+
     // Simple inline script to handle the visual scan effect trigger
     const analyzeBtn = document.getElementById('analyze-btn');
     const scanOverlay = document.getElementById('scan-overlay');
     const statusText = document.getElementById('status-text');
 
-    // Hook into existing logic via event capturing or just standard listener if script.js logic allows
-    // Note: script.js also attaches listener. We can add visual effects here.
     analyzeBtn.addEventListener('click', () => {
-        const code = document.getElementById('code-input').value.trim();
+        const code = window.editor ? window.editor.getValue().trim() : '';
         if (code) {
             scanOverlay.classList.add('scanning');
             statusText.style.opacity = '1';

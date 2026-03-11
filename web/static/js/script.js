@@ -68,13 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Bug Detection Logic ---
     const analyzeBtn = document.getElementById('analyze-btn');
-    const codeInput = document.getElementById('code-input');
     const resultsArea = document.getElementById('results-area');
     const resultsContent = document.getElementById('results-content');
 
     if (analyzeBtn) {
         analyzeBtn.addEventListener('click', async () => {
-            const code = codeInput.value.trim();
+            const code = window.editor ? window.editor.getValue().trim() : '';
             if (!code) {
                 alert("Please enter some code to analyze.");
                 return;
@@ -94,13 +93,78 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ code: code })
                 });
 
-                const data = await response.json();
+                if (!response.ok) {
+                    alert("Error checking analysis from server.");
+                    return;
+                }
+                
+                resultsContent.innerHTML = "";
+                resultsArea.style.display = 'block';
 
-                if (response.ok) {
-                    resultsContent.textContent = data.result;
-                    resultsArea.style.display = 'block';
-                } else {
-                    alert("Error: " + (data.error || "Unknown error occurred"));
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let accumulatedText = "";
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    accumulatedText += decoder.decode(value, { stream: true });
+                    // Parse markdown to HTML live
+                    resultsContent.innerHTML = window.marked ? window.marked.parse(accumulatedText) : accumulatedText;
+                }
+                
+                // --- One-Click Fix Logic ---
+                // Search for the last code block in the accumulated markdown
+                const codeBlockRegex = /```[\w]*\n([\s\S]*?)```/g;
+                let match;
+                let lastCodeBlock = null;
+                while ((match = codeBlockRegex.exec(accumulatedText)) !== null) {
+                    lastCodeBlock = match[1].trim(); // Get the inner code
+                }
+
+                if (lastCodeBlock && window.editor) {
+                    // Inject the Apply Fix button dynamically into the DOM
+                    const fixBtnContainer = document.createElement('div');
+                    fixBtnContainer.style.textAlign = 'right';
+                    fixBtnContainer.style.marginTop = 'var(--spacing-md)';
+                    
+                    const fixBtn = document.createElement('button');
+                    fixBtn.className = 'btn btn-primary pulse-anim';
+                    fixBtn.innerHTML = ' Apply AI Fix to Editor';
+                    
+                    fixBtn.addEventListener('click', () => {
+                        if (fixBtn.disabled) return;
+                        fixBtn.disabled = true;
+                        
+                        window.editor.setValue(lastCodeBlock);
+                        fixBtn.innerHTML = '✔ Fix Applied!';
+                        fixBtn.classList.remove('pulse-anim');
+                        fixBtn.style.backgroundColor = '#10b981';
+                        fixBtn.style.cursor = 'default';
+                        
+                        // Gamification visual feedback
+                        const scoreParticle = document.createElement('div');
+                        scoreParticle.textContent = '+10 XP';
+                        scoreParticle.className = 'xp-particle';
+                        document.body.appendChild(scoreParticle);
+                        
+                        // Give it the coordinates of the button
+                        const rect = fixBtn.getBoundingClientRect();
+                        scoreParticle.style.left = `${rect.left + rect.width / 2}px`;
+                        scoreParticle.style.top = `${rect.top}px`;
+                        
+                        setTimeout(() => scoreParticle.remove(), 1000);
+                        
+                        // Update Backend XP Score
+                        fetch('/api/increment_score', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ points: 10 })
+                        }).catch(console.error);
+                    });
+                    
+                    fixBtnContainer.appendChild(fixBtn);
+                    resultsContent.parentNode.appendChild(fixBtnContainer);
                 }
 
             } catch (error) {
